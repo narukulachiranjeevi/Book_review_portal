@@ -14,3 +14,131 @@ body {
   .logo a:active {
     text-decoration: none;
   }
+  .book-image {
+    max-width: 200px;  /* Set the maximum width */
+    max-height: 191px; /* Set the maximum height */
+    width: auto;      /* Allow the width to adjust automatically to maintain aspect ratio */
+    height: auto;     /* Allow the height to adjust automatically to maintain aspect ratio */
+}
+
+.link-muted { color: #aaa; } .link-muted:hover { color: #1266f1; }
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+
+.comment {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.comment-text {
+  font-size: 16px;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+button.like {
+  background-color: #27ae60;
+}
+
+button.dislike {
+  background-color: #e74c3c;
+}
+
+button.reply {
+  background-color: #3498db;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.comment-container {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.comment {
+  margin-bottom: 10px;
+}
+
+.comment-text {
+  background-color: #f9f9f9;
+  padding: 10px;
+}
+
+.user-profile {
+  width: 30px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.reply-button, .load-replies-button {
+  cursor: pointer;
+  color: blue;
+}
+
+.reply-form {
+  display: none;
+}
+
+.reply-form-textarea {
+  width: 100%;
+  min-height: 50px;
+}
+
+.replies {
+  display: none;
+}
+
+.sample-reply {
+  background-color: #e6e6e6;
+  padding: 5px;
+  margin-top: 5px;
+}

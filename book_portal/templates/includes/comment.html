@@ -1,0 +1,25 @@
+<form method="post" action="{% url 'post_comment' bookId=book.id %}">
+    {% csrf_token %}
+    <img class="rounded-circle shadow-1-strong me-3"
+        src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp" alt="avatar" width="40"
+        height="40" />
+    <textarea class="form-control" id="textAreaExample" rows="1" name = "{{commentForm.comment.name}}"
+          style="background: #fff;" required></textarea>
+    <button type="submit">Submit</button>
+  </form>
+</p>
+<div class="comment">
+    <div class="user-info">
+        <img src="profile-pic.jpg" alt="User Profile Picture" class="profile-pic">
+        <p class="user-name">{{ comment.commentedUser }}</p>
+    </div>
+    <p class="comment-text">{{ comment.comment }} </p>
+    <div class="actions">
+        <button class="like">Like</button>
+        <button class="dislike">Dislike</button>
+        <button class="reply-button" data-comment-id="{{ comment.id }}">Reply</button>
+        <div class="reply-form" data-comment-id="{{ comment.id }}" style="display: none;">
+          <P>reply button activated </P>
+        </div>
+    </div>
+</div>

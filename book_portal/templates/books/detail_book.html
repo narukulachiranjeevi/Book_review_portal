@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-3">
+      Fixed content
+      <div class="sticky-top">
+        <div class="card" style="width: 18rem;">
+          <img class="card-img-top" src="{{ book.cover_image.url }}" alt="Card image cap">
+          <div class="card-body">
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="col-lg-9">
+    <h1>{{book.title}}</h1>
+    <h5>{{book.author}}</h5>
+    <p>
+      This book was posted by {{book.user}}
+      <form method="post" action="{% url 'post_comment' bookId=book.id %}">
+        {% csrf_token %}
+        <img class="rounded-circle shadow-1-strong me-3"
+            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp" alt="avatar" width="40"
+            height="40" />
+        <textarea class="form-control" id="textAreaExample" rows="4" name = "{{commentForm.comment.name}}"
+              style="background: #fff;" required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </p>
+    {% for comment in book.comment.all %}
+      <div class="comments-container">
+        <div class="comment">
+            <div class="comment-text">
+                <div class="user-profile"></div>
+                <span class="user-name">{{comment.commentedUser}}:</span> 
+                {{comment.comment}}
+                <div class="reply-button">Reply</div>
+                <div class="load-replies-button" data-reply-id="{{comment.id}}">Load Replies</div>
+                <div class="replies">   
+                </div>
+                <div class="reply-form" style="display: none;">
+                  {{user.username}}
+                    <form>
+                        <input type="hidden" id="user-name" name="repliedUser" value="{{ user.username }}">
+                        <input type="hidden" id="user-comment" name="comment" value="{{ comment.comment }}">
+                        <textarea class="reply-form-textarea" name="reply" placeholder="Your reply"></textarea>
+                        <button class="submit-reply">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}
+{% block js %}
+<script>
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Check if this cookie is the one we're looking for
+            if (cookie.substring(0, name.length + 1) === name + '=') {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+  $(document).ready(function() {
+      // Load Replies Button Click
+      $(".load-replies-button").click(function() {
+          const repliesContainer = $(this).siblings(".replies");
+          const replyId = $(this).data("reply-id");
+  
+          // Send an AJAX request to fetch replies
+          $.ajax({
+              url: `/books/comment/${replyId}/getreplies`, // Replace with your actual endpoint
+              type: "GET",
+              dataType: "json",
+              success: function(data) {
+                  // Clear existing replies
+                  repliesContainer.empty();
+                  console.log(data)
+                  // Iterate through the fetched replies and append them to the container
+                  $.each(data, function(index, reply) {
+                      const replyElement = `
+                          <div class="sample-reply">
+                              <div class="user-profile"></div>
+                              <span class="user-name">${reply.repliedUser}:</span> ${reply.reply}
+                          </div>`;
+                      repliesContainer.append(replyElement);
+                  });
+                  if(data.length==0){
+                    const replyElement = `
+                          <div class="sample-reply">
+                              <span class="user-name">No replies</span>
+                          </div>`;
+                      repliesContainer.append(replyElement);
+                  }
+                  // Show the replies container
+                  repliesContainer.show();
+              },
+              error: function(error) {
+                  console.error("An error occurred:", error);
+              }
+          });
+      });
+  
+      // Reply Button Click
+      $(".reply-button").click(function() {
+          const replyForm = $(this).siblings(".reply-form");
+          replyForm.toggle(); // Toggle the visibility of the reply form
+      });
+  
+      // Submit Reply Button Click (You can adapt this part to your specific form)
+      $(".submit-reply").click(function(e) {
+          e.preventDefault(); // Prevent the default form submission
+  
+          const replyForm = $(this).closest("form");
+          const formData = replyForm.serialize(); // Serialize form data
+          console.log(formData)
+          // Send an AJAX request to submit the reply 
+          $.ajax({
+              url: "/books/replies/create/", // Replace with your actual endpoint
+              type: "POST",
+              data: formData,
+              dataType: "json",
+              headers: {
+                  'X-CSRFToken': getCookie('csrftoken')  // Include the CSRF token
+              },
+              success: function(response) {
+                  // Handle the response (e.g., display a success message)
+                  console.log("Reply submitted successfully:", response);
+                  replyForm.toggle();
+                  // You may also clear the form or update the replies section
+              },
+              error: function(error) {
+                  console.error("An error occurred:", error);
+              }
+          });
+          
+      });
+  });
+  </script>
+  
+
+{% endblock %}

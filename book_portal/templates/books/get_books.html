@@ -5,13 +5,13 @@
         {% for book in books %}
         <div class="col">
             <div class="card " style="width: 18rem;">
-                <img src="{{ book.cover_image.url }}" alt="{{ book.title }} Cover">
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }} Cover" class="book-image">
                 <div class="card-body">
                 <h5 class="card-title">{{book.title}}</h5>
                 <p class="card-text">Author of the book is {{book.author}}
                    Book's Genre is  #{{book.genre}}
                 </p>
-                <a href="" class="btn btn-primary">Go somewhere</a>
+                <a href="{% url 'detail_book' book.pk %}" class="btn btn-primary">Know More about This Book</a>
                 </div>
             </div>
         </div>

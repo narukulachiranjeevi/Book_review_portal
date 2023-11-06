@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .comment-container {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+        .comment {
+            margin-bottom: 10px;
+        }
+
+        .comment-text {
+            background-color: #f9f9f9;
+            padding: 10px;
+        }
+
+        .user-profile {
+            width: 30px;
+            height: 30px;
+            background-color: #ccc;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .reply-button, .load-replies-button {
+            cursor: pointer;
+            color: blue;
+        }
+
+        .reply-form {
+            display: none;
+        }
+
+        .reply-form-textarea {
+            width: 100%;
+            min-height: 50px;
+        }
+
+        .replies {
+            display: none;
+        }
+
+        .sample-reply {
+            background-color: #e6e6e6;
+            padding: 5px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="comments-container">
+        <div class="comment">
+            <div class="comment-text">
+                <div class="user-profile"></div>
+                <span class="user-name">User 1:</span> Existing Comment 1
+                <div class="reply-button">Reply</div>
+                <div class="load-replies-button">Load Replies</div>
+                <div class="replies">
+                    <div class="sample-reply">
+                        <div class="user-profile"></div>
+                        <span class="user-name">User 2:</span> Sample Reply 1 to Comment 1
+                    </div>
+                    <div class="sample-reply">
+                        <div class="user-profile"></div>
+                        <span class="user-name">User 3:</span> Sample Reply 2 to Comment 1
+                    </div>
+                </div>
+                <div class="reply-form" style="display: none;">
+                    <form>
+                        <textarea class="reply-form-textarea" placeholder="Your reply"></textarea>
+                        <button class="submit-reply">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const replyButtons = document.querySelectorAll(".reply-button");
+            const loadRepliesButtons = document.querySelectorAll(".load-replies-button");
+
+            replyButtons.forEach(button => {
+                button.addEventListener("click", function() {
+                    const replyForm = this.parentElement.querySelector(".reply-form");
+                    replyForm.style.display = replyForm.style.display === "none" ? "block" : "none";
+                });
+            });
+
+            loadRepliesButtons.forEach(button => {
+                button.addEventListener("click", function() {
+                    const replies = this.parentElement.querySelector(".replies");
+                    replies.style.display = replies.style.display === "none" ? "block" : "none";
+                });
+            });
+        });
+    </script>
+</body>
+</html>

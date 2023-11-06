@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'books',
     'account',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +135,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_REDIRECT_URL = '/books/'
 LOGOUT_REDIRECT_URL = '/books/'
+LOGIN_URL = 'login'
+
+# settings.py
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
