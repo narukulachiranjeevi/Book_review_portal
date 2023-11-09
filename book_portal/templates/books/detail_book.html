@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
+{% load stars_filter %}
 
 {% block content %}
+
 <div class="row">
   <div class="col-lg-3">
       Fixed content
       <div class="sticky-top">
-        <div class="card" style="width: 18rem;">
+        <div class="card" style="max-width: 18rem;">
           <img class="card-img-top" src="{{ book.cover_image.url }}" alt="Card image cap">
           <div class="card-body">
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -14,47 +16,79 @@
       </div>
   </div>
   <div class="col-lg-9">
+    <span class="heading">User Rating</span>
+    {{ book.get_rating_values|stars }}
+    <hr style="border:3px solid #f1f1f1">
+    <div class="rows">{{ book.get_rating_values|barchart }}</div>
     <h1>{{book.title}}</h1>
     <h5>{{book.author}}</h5>
+    <form action="{% url 'createreview' bookId=book.id %}" method="post">
+        {% csrf_token %}
+        <div class="rating mr-auto">
+            <input type="radio" id="star5" name="rating" value="5" />
+            <label class="star" for="star5" title="Awesome" aria-hidden="true"></label>
+            <input type="radio" id="star4" name="rating" value="4" />
+            <label class="star" for="star4" title="Great" aria-hidden="true"></label>
+            <input type="radio" id="star3" name="rating" value="3" />
+            <label class="star" for="star3" title="Very good" aria-hidden="true"></label>
+            <input type="radio" id="star2" name="rating" value="2" />
+            <label class="star" for="star2" title="Good" aria-hidden="true"></label>
+            <input type="radio" id="star1" name="rating" value="1" />
+            <label class="star" for="star1" title="Bad" aria-hidden="true"></label>
+          </div>
+        <label for="message">Enter your message:</label><br>
+        <textarea class="form-control" id="message" name="review" rows="4" cols="50" value="{{review_form.review}}" required></textarea><br>
+        
+        <!-- Submit Button -->
+        <input type="submit" value="Submit">
+    </form>
     <p>
       This book was posted by {{book.user}}
-      <form method="post" action="{% url 'post_comment' bookId=book.id %}">
-        {% csrf_token %}
-        <img class="rounded-circle shadow-1-strong me-3"
-            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp" alt="avatar" width="40"
-            height="40" />
-        <textarea class="form-control" id="textAreaExample" rows="4" name = "{{commentForm.comment.name}}"
-              style="background: #fff;" required></textarea>
-        <button type="submit">Submit</button>
-      </form>
+      
     </p>
-    {% for comment in book.comment.all %}
+    <p>hey {{book.reviews.all}}</p>
+    
+    {% for review in book.review.all %}
       <div class="comments-container">
         <div class="comment">
             <div class="comment-text">
-                <div class="user-profile"></div>
-                <span class="user-name">{{comment.commentedUser}}:</span> 
-                {{comment.comment}}
+                <a href="{% url 'profile' pk=review.reviewedUser.id %}">
+                    <div style="cursor: pointer; color: blue; text-decoration: underline;">
+                        {% if review.reviewedUser.profile.profile_pic %}
+                            <img class="user-profile" src="{{review.reviewedUser.profile.profile_pic.url}}" alt="User Avatar">
+                        {% else %}
+                            <div class="user-profile"></div>
+                        {% endif %}
+                        <span class="user-name">{{review.reviewedUser}}:</span> 
+                    </div>
+                </a>
+                {{review.review}}
+                {{ review.rating |rating }}
                 <div class="reply-button">Reply</div>
-                <div class="load-replies-button" data-reply-id="{{comment.id}}">Load Replies</div>
+                <div class="load-replies-button" data-review-id="{{review.id}}">Load Replies</div>
+                {% if request.user.is_superuser %}
+                    <div class="delete-botton" data-review-id="{{review.id}}"><a href="{% url 'reviewDelete' pk=review.id %}">Delete Review</a></div>
+                {% endif %}
                 <div class="replies">   
                 </div>
                 <div class="reply-form" style="display: none;">
                   {{user.username}}
                     <form>
-                        <input type="hidden" id="user-name" name="repliedUser" value="{{ user.username }}">
-                        <input type="hidden" id="user-comment" name="comment" value="{{ comment.comment }}">
-                        <textarea class="reply-form-textarea" name="reply" placeholder="Your reply"></textarea>
-                        <button class="submit-reply">Submit</button>
+                        <input type="hidden" id="user-name" name="repliedUser" value="{{ user.id }}">
+                        <input type="hidden" id="user-comment" name="review" value="{{ review.id }}">
+                        <textarea class="reply-form-textarea" name="reply" placeholder="Your reply">{{ review.reviewreply }}</textarea>
+                        {% if user.is_authenticated %} 
+                            <button class="submit-reply">Submit</button>
+                        {% else %}
+                        You are not logged in.<a href="{% url 'login' %}">Login</a> By link
+                        {% endif %}
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-
     {% endfor %}
-
+    
     </div>
 </div>
 
@@ -80,12 +114,13 @@
   $(document).ready(function() {
       // Load Replies Button Click
       $(".load-replies-button").click(function() {
+        console.log('called')
           const repliesContainer = $(this).siblings(".replies");
-          const replyId = $(this).data("reply-id");
-  
+          const reviewId = $(this).data("review-id");
+          console.log(reviewId)
           // Send an AJAX request to fetch replies
           $.ajax({
-              url: `/books/comment/${replyId}/getreplies`, // Replace with your actual endpoint
+              url: `/books/review/${reviewId}/getreplies`, // Replace with your actual endpoint
               type: "GET",
               dataType: "json",
               success: function(data) {
@@ -96,8 +131,8 @@
                   $.each(data, function(index, reply) {
                       const replyElement = `
                           <div class="sample-reply">
-                              <div class="user-profile"></div>
-                              <span class="user-name">${reply.repliedUser}:</span> ${reply.reply}
+                            <img class="user-profile" src="{{reply.reviewreply.profile.profile_pic.url}}" alt="User Avatar">
+                              <span class="user-name">${reply.reviewreply}:</span> ${reply.reply}
                           </div>`;
                       repliesContainer.append(replyElement);
                   });
@@ -113,6 +148,7 @@
               },
               error: function(error) {
                   console.error("An error occurred:", error);
+                      repliesContainer.append(replyElement);
               }
           });
       });

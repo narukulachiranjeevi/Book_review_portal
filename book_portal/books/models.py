@@ -7,18 +7,33 @@ class Book(models.Model):
     user = models.ForeignKey(User, related_name='books', on_delete=models.CASCADE)
     title = models.CharField(max_length=20)
     author = models.CharField(max_length=20)
-    rating = models.IntegerField(
-        null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(5)]
-    )
     isbn = models.CharField(max_length=13, unique=True)
     cover_image = models.ImageField(upload_to='images/')
     genre = models.CharField(max_length=50)
 
     def __str__(self):
         return self.title
+    
+    def get_rating_values(self):
+        return self.review.values_list('rating', flat=True)
+
+    def count_5_star_reviews(self):
+        return self.review.filter(rating=5).count()
+    
+    def count_4_star_reviews(self):
+        return self.review.filter(rating=4).count()
+    
+    def count_3_star_reviews(self):
+        return self.review.filter(rating=3).count()
+    
+    def count_2_star_reviews(self):
+        return self.review.filter(rating=2).count()
+    
+    def count_1_star_reviews(self):
+        return self.review.filter(rating=1).count()
 
 class Comment(models.Model):
+    
     commentedUser = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
     comment = models.TextField(max_length=250,blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -26,6 +41,27 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment
+    
+class Review(models.Model):
+    reviewedUser = models.ForeignKey(User, related_name='review', on_delete=models.CASCADE)
+    review = models.TextField(max_length=250,blank=False)
+    rating = models.IntegerField(
+        null=True,
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    book = models.ForeignKey(Book,related_name='review',on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.review
+
+class ReviewReply(models.Model):
+    repliedUser = models.ForeignKey(User, related_name='reply', on_delete=models.CASCADE)
+    reply = models.CharField(max_length=250)
+    created_at = models.DateTimeField(auto_now_add=True)
+    review = models.ForeignKey(Review,related_name='reply',on_delete=models.CASCADE)
+    def __str__(self):
+        return self.reply
 
 class Reply(models.Model):
     repliedUser = models.ForeignKey(User, related_name='replies', on_delete=models.CASCADE)

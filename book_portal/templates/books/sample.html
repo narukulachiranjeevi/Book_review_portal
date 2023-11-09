@@ -1,107 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>User Profile</title>
     <style>
-        .comment-container {
-            padding: 10px;
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .profile {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
             border: 1px solid #ccc;
-            margin-bottom: 10px;
+            border-radius: 5px;
         }
-
-        .comment {
-            margin-bottom: 10px;
-        }
-
-        .comment-text {
-            background-color: #f9f9f9;
-            padding: 10px;
-        }
-
-        .user-profile {
-            width: 30px;
-            height: 30px;
-            background-color: #ccc;
+        .profile img {
+            max-width: 100%;
+            height: auto;
             border-radius: 50%;
-            display: inline-block;
-            margin-right: 10px;
         }
-
-        .user-name {
-            font-weight: bold;
-        }
-
-        .reply-button, .load-replies-button {
-            cursor: pointer;
-            color: blue;
-        }
-
-        .reply-form {
+        .edit-form {
             display: none;
-        }
-
-        .reply-form-textarea {
-            width: 100%;
-            min-height: 50px;
-        }
-
-        .replies {
-            display: none;
-        }
-
-        .sample-reply {
-            background-color: #e6e6e6;
-            padding: 5px;
-            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="comments-container">
-        <div class="comment">
-            <div class="comment-text">
-                <div class="user-profile"></div>
-                <span class="user-name">User 1:</span> Existing Comment 1
-                <div class="reply-button">Reply</div>
-                <div class="load-replies-button">Load Replies</div>
-                <div class="replies">
-                    <div class="sample-reply">
-                        <div class="user-profile"></div>
-                        <span class="user-name">User 2:</span> Sample Reply 1 to Comment 1
-                    </div>
-                    <div class="sample-reply">
-                        <div class="user-profile"></div>
-                        <span class="user-name">User 3:</span> Sample Reply 2 to Comment 1
-                    </div>
-                </div>
-                <div class="reply-form" style="display: none;">
-                    <form>
-                        <textarea class="reply-form-textarea" placeholder="Your reply"></textarea>
-                        <button class="submit-reply">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+    <div class="profile">
+        <h1>User Profile</h1>
+        <img src="user-avatar.jpg" alt="User Avatar">
+        <h2>Welcome, <span id="username"></span></h2>
+        <p>Email: <span id="email"></span></p>
+        <p>Location: <span id="location"></span></p>
+        <p>Joined on: <span id="joinDate"></span></p>
+        <p>Member Since: <span id="memberSince"></span></p>
+        <button onclick="showEditForm()">Edit Profile</button>
+    </div>
+
+    <div class="edit-form">
+        <h2>Edit Your Profile</h2>
+        <form id="profileForm">
+            <label for="editUsername">Username:</label>
+            <input type="text" id="editUsername" name="editUsername"><br><br>
+            <label for="editEmail">Email:</label>
+            <input type="text" id="editEmail" name="editEmail"><br><br>
+            <label for="editLocation">Location:</label>
+            <input type="text" id="editLocation" name="editLocation"><br><br>
+            <button type="button" onclick="saveProfile()">Save</button>
+        </form>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const replyButtons = document.querySelectorAll(".reply-button");
-            const loadRepliesButtons = document.querySelectorAll(".load-replies-button");
+        // Simulating user data, you would fetch this from your server/database
+        const userData = {
+            username: "JohnDoe",
+            email: "johndoe@example.com",
+            location: "New York, USA",
+            joinDate: "2023-01-15",
+        };
 
-            replyButtons.forEach(button => {
-                button.addEventListener("click", function() {
-                    const replyForm = this.parentElement.querySelector(".reply-form");
-                    replyForm.style.display = replyForm.style.display === "none" ? "block" : "none";
-                });
-            });
+        // Display user data on the profile page
+        document.getElementById("username").textContent = userData.username;
+        document.getElementById("email").textContent = userData.email;
+        document.getElementById("location").textContent = userData.location;
 
-            loadRepliesButtons.forEach(button => {
-                button.addEventListener("click", function() {
-                    const replies = this.parentElement.querySelector(".replies");
-                    replies.style.display = replies.style.display === "none" ? "block" : "none";
-                });
-            });
-        });
+        // Format and display join date
+        const joinDate = new Date(userData.joinDate);
+        document.getElementById("joinDate").textContent = joinDate.toDateString();
+
+        // Calculate and display the member since
+        const today = new Date();
+        const membershipDuration = today.getFullYear() - joinDate.getFullYear();
+        document.getElementById("memberSince").textContent = `${membershipDuration} years`;
+
+        function showEditForm() {
+            // Hide the profile display and show the edit form
+            document.querySelector(".profile").style.display = "none";
+            document.querySelector(".edit-form").style.display = "block";
+
+            // Populate the edit form with the current user data
+            document.getElementById("editUsername").value = userData.username;
+            document.getElementById("editEmail").value = userData.email;
+            document.getElementById("editLocation").value = userData.location
+        }
     </script>
-</body>
-</html>
